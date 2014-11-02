@@ -12,7 +12,7 @@ import maras.utils
 import msgpack
 
 
-class HashIndex(object):
+class HMapIndex(object):
     '''
     Hash index
     '''
