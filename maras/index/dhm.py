@@ -36,14 +36,20 @@ class DHM(object):
             db_root,
             hash_limit=0xfffff,
             key_hash='sha1',
+            fmt='>KsQ',
+            entry_map=None,
             header_len=1024,
             key_delim='/',
             open_fd=512,
             flush=True):
+        if entry_map is None:
+            entry_map = ['key', 'prev']
+        self.entry_map = entry_map
         self.db_root = db_root
         self.hash_limit = hash_limit
         self.key_hash = key_hash
         self.hash_func, self.key_size = maras.utils.get_hash_data(key_hash)
+        self.fmt = fmt.replace('K', self.key_size)
         self.header_len = header_len
         self.key_delim = key_delim
         self.open_fd = open_fd
