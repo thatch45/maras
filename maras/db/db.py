@@ -39,6 +39,10 @@ class DB(object):
         '''
         Create a new db file
         '''
+        dbdir = os.path.dirname(self.path)
+        if not os.path.exists(dbdir):
+            os.makedirs(dbdir)
+
         if os.path.exists(self.path):
             raise ValueError('Database exists')
         fp_ = open(self.path, 'w+b')
