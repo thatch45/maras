@@ -1,7 +1,10 @@
 '''
 Simple database interface
 '''
-
+# Write Seq:
+# 1. Get index data for key
+# 2. write storage using key index data
+# 3. write index using storage data return
 # Import python libs
 import os
 
@@ -19,12 +22,14 @@ class DB(object):
     '''
     def __init__(self, path, storage='msgpack', serial='msgpack'):
         self.dbpath = path
-        self.path = os.path.join(path, 'maras.db')
+        self.path = os.path.join(path, 'maras_meta.db')
         self.serial = serial
         self.header_len = 1000
         self.h_delim = '_||_||_'
         self.header = {'serial': serial}
         self.indexes = {}
+        self.default_storage = maras.stor.mpack.Msgpack(self.dbpath)
+        self.stores[storage] = self.default_storage
         self.fp = self.__open_db()
 
     def __open_db(self):
@@ -71,9 +76,18 @@ class DB(object):
         ind = maras.index.hmap.HMapIndex(name, self.dbpath)
         self.indexes[name] = ind
 
-    def insert(self, data, key, id_=None):
+    def insert(self, data, key, id_=None, stor='msgpack'):
         '''
         Insert the given data into the db
         '''
+        if stor is None:
+            stor = self.stores.get(stor, self.default_storage)
         if not id_:
-            id_ = maras.utils.rand_hex_str(40)
+            id_ = maras.utils.rand_hex_str(64)
+        for index in self.indexes:
+            ind_ref, map_key = index.hash_map_ref(key)
+            size, start = stor.insert(key, data, id_, ind_ref)
+            index.insert(key, id_, start, size, None, ind_ref, map_key)
+            ind_ref['start'] = start
+            ind_ref['size'] = size
+            return ind_ref
