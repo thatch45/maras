@@ -100,6 +100,8 @@ class DHM(object):
                 'fmt': self.entry_fmt,
                 'bucket_size': self.bucket_size,
                 'entry_map': self.entry_map,
+                'dir': os.path.dirname(fn_),
+                'num': int(fn_[fn_.rindex('_') + 1:]),
                 }
         header_entry = '{0}{1}'.format(msgpack.dumps(header), HEADER_DELIM)
         fp_ = open(fn_, 'r+b')
@@ -176,7 +178,16 @@ class DHM(object):
             f_num += 1
         return h_entry, map_data
 
-    def insert(self, key, id_, start, size, type_, **kwargs):
+    def insert(
+            self,
+            key,
+            id_,
+            start,
+            size,
+            type_,
+            h_data,
+            map_key,
+            **kwargs):
         '''
         Insert the data into the specified location
         '''
@@ -186,7 +197,7 @@ class DHM(object):
         # 4. Write Index table data
         # 5. Construct hash table struct
         # 6. Write HT struct
-        h_data, map_data = self.hash_map_ref(key)
+        map_data = self.maps[map_key]
         i_entry = self._i_entry(
                 key,
                 id_,
