@@ -12,6 +12,7 @@ import io
 # Import maras libs
 import maras.utils
 import maras.index.hmap
+import maras.stor.mpack
 
 # Import third party libs
 import msgpack
@@ -33,7 +34,7 @@ class DB(object):
         self.h_delim = '_||_||_'
         self.header = {}
         self.indexes = {}
-        self.default_storage = maras.stor.mpack.Msgpack(self.dbpath)
+        self.default_storage = maras.stor.mpack.MPack(self.dbpath)
         self.stores[storage] = self.default_storage
 
     def create(
