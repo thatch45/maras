@@ -176,7 +176,7 @@ class DHM(object):
                 # Key Collision, go to the next table
                 break
             f_num += 1
-        return h_entry, map_data
+        return h_entry, fn_
 
     def insert(
             self,
