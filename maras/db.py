@@ -11,7 +11,7 @@ import io
 
 # Import maras libs
 import maras.utils
-import maras.index.hmap
+import maras.index.dhm
 import maras.stor.mpack
 
 # Import third party libs
