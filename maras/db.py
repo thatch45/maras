@@ -37,6 +37,7 @@ class DB(object):
         self.default_storage = maras.stor.mpack.MPack(self.dbpath)
         self.stores = {}
         self.stores[storage] = self.default_storage
+        self.opened = False
 
     def create(
             self,
@@ -72,6 +73,7 @@ class DB(object):
         with io.open(self.path, 'w+b') as fp_:
             header = '{0}{1}'.format(msgpack.dumps(self.header), self.h_delim)
             fp_.write(header)
+        self.opened = True
         return self.header
 
     def open_db(self):
@@ -83,12 +85,15 @@ class DB(object):
         with io.open(self.path, 'rb') as fp_:
             raw_head = fp_.read(self.header_len)
             self.header = msgpack.loads(raw_head[:raw_head.index(self.h_delim)])
+        self.opened = True
         return self.header
 
     def add_index(self, name):
         '''
         Add an index
         '''
+        if not self.opened:
+            raise ValueError('DB not opened')
         if name in self.indexes:
             raise ValueError('Already has index')
         ind = maras.index.dhm.DHM(name, self.dbpath, **self.header)
