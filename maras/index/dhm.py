@@ -100,7 +100,7 @@ class DHM(object):
                 'hash': self.key_hash,
                 'h_limit': self.hash_limit,
                 'header_len': self.header_len,
-                'fmt': self.entry_fmt,
+                'fmt': self.fmt,
                 'bucket_size': self.bucket_size,
                 'entry_map': self.entry_map,
                 'dir': os.path.dirname(fn_),
@@ -117,6 +117,8 @@ class DHM(object):
         Attempt to open a map file, if the map file does not exist
         raise IOError
         '''
+        if not os.path.isfile(fn_):
+            raise IOError()
         fp_ = io.open(fn_, 'r+b')
         header = {'fp': fp_}
         raw_head = ''
@@ -171,7 +173,7 @@ class DHM(object):
         f_num = 1
         while True:
             fn_ = os.path.join(hmdir, 'midx_{0}'.format(f_num))
-            h_entry, map_data = self._get_h_entry(fn_, key)
+            h_entry, map_data = self._get_h_entry(key, fn_)
             if not h_entry:
                 # This is a new key
                 break
