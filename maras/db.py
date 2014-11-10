@@ -35,6 +35,7 @@ class DB(object):
         self.header = {}
         self.indexes = {}
         self.default_storage = maras.stor.mpack.MPack(self.dbpath)
+        self.stores = {}
         self.stores[storage] = self.default_storage
 
     def create(
