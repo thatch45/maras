@@ -107,7 +107,7 @@ class DB(object):
             stor = self.stores.get(stor, self.default_storage)
         if not id_:
             id_ = maras.utils.rand_hex_str(64)
-        for index in self.indexes:
+        for name, index in self.indexes.items():
             ind_ref, map_key = index.hash_map_ref(key)
             size, start = stor.insert(key, data, id_, ind_ref)
             index.insert(key, id_, start, size, None, ind_ref, map_key)
