@@ -36,7 +36,6 @@ setup(name=NAME,
       packages=[
           'maras',
           'maras.index',
-          'maras.db',
           'maras.stor',
           'maras.utils',
           ]
