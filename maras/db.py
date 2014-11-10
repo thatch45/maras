@@ -96,7 +96,7 @@ class DB(object):
             raise ValueError('DB not opened')
         if name in self.indexes:
             raise ValueError('Already has index')
-        ind = maras.index.dhm.DHM(name, self.dbpath, **self.header)
+        ind = maras.index.dhm.DHM(self.dbpath, **self.header)
         self.indexes[name] = ind
 
     def insert(self, data, key, id_=None, stor='msgpack'):
