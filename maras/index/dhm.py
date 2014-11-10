@@ -10,6 +10,7 @@ A hash based index
 # Import python libs
 import struct
 import os
+import io
 
 # Import maras libs
 import maras.utils
@@ -41,7 +42,8 @@ class DHM(object):
             header_len=1024,
             key_delim='/',
             open_fd=512,
-            flush=True):
+            sync=True,
+            **kwargs):
         if entry_map is None:
             entry_map = ['key', 'prev']
         self.entry_map = entry_map
@@ -55,7 +57,8 @@ class DHM(object):
         self.open_fd = open_fd
         self.fds = []
         self.maps = {}
-        self.flush = flush
+        self.sync = sync
+        self.kwargs = kwargs
 
     def _hm_dir(self, key):
         '''
@@ -104,7 +107,7 @@ class DHM(object):
                 'num': int(fn_[fn_.rindex('_') + 1:]),
                 }
         header_entry = '{0}{1}'.format(msgpack.dumps(header), HEADER_DELIM)
-        fp_ = open(fn_, 'r+b')
+        fp_ = io.open(fn_, 'r+b')
         fp_.write(header_entry)
         header['fp'] = fp_
         return header
@@ -114,7 +117,7 @@ class DHM(object):
         Attempt to open a map file, if the map file does not exist
         raise IOError
         '''
-        fp_ = open(fn_, 'r+b')
+        fp_ = io.open(fn_, 'r+b')
         header = {'fp': fp_}
         raw_head = ''
         while True:
