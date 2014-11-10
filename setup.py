@@ -12,7 +12,7 @@ else:
     from distutils.core import setup
 
 NAME = 'maras'
-DESC = ('Pure python database engine')
+DESC = ('Pure python distributed database (engine first)')
 VERSION = maras.version
 
 setup(name=NAME,
@@ -27,13 +27,15 @@ setup(name=NAME,
           'Programming Language :: Python',
           'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',
-          'Development Status :: 4 - Beta',
+          'Programming Language :: Python :: 3.4',
+          'Development Status :: 2 - Pre-Alpha',
           'Intended Audience :: Developers',
           ],
       packages=[
           'maras',
           'maras.index',
           'maras.db',
+          'maras.stor',
           'maras.utils',
           ]
       )
