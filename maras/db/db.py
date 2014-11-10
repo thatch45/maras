@@ -7,6 +7,7 @@ Simple database interface
 # 3. write index using storage data return
 # Import python libs
 import os
+import io
 
 # Import maras libs
 import maras.utils
@@ -20,40 +21,56 @@ class DB(object):
     '''
     A simple single threaded database
     '''
-    def __init__(self, path, storage='msgpack', serial='msgpack'):
+    def __init__(
+            self,
+            path,
+            storage='msgpack',
+            serial='msgpack'):
         self.dbpath = path
         self.path = os.path.join(path, 'maras_meta.db')
         self.serial = serial
-        self.header_len = 1000
+        self.header_len = 1024
         self.h_delim = '_||_||_'
-        self.header = {'serial': serial}
+        self.header = {}
         self.indexes = {}
         self.default_storage = maras.stor.mpack.Msgpack(self.dbpath)
         self.stores[storage] = self.default_storage
-        self.fp = self.__open_db()
 
-    def __open_db(self):
+    def create(
+            self,
+            hash_limit=0xfffff,
+            key_hash='sha1',
+            fmt='>KsQ',
+            entry_map=None,
+            header_len=1024,
+            key_delim='/',
+            open_fd=512,
+            sync=True):
         '''
-        Auto create or open the index
+        Create a new db, this will create the new database meta file, the
+        meta file contains the default information to apply to new indexes
+        allowing the database to be re-opened without needing to re-pass
+        all of the index params
         '''
-        if not os.path.exists(self.path):
-            return self.create()
-        return self.open_db()
-
-    def create(self):
-        '''
-        Create a new db file
-        '''
+        if os.path.exists(self.path):
+            raise ValueError('Database exists')
         dbdir = os.path.dirname(self.path)
         if not os.path.exists(dbdir):
             os.makedirs(dbdir)
-
-        if os.path.exists(self.path):
-            raise ValueError('Database exists')
-        fp_ = open(self.path, 'w+b')
-        header = '{0}{1}'.format(msgpack.dumps(self.header), self.h_delim)
-        fp_.write(header)
-        return fp_
+        if entry_map is None:
+            entry_map = ['key', 'prev']
+        self.header['hash_limit'] = hash_limit
+        self.header['key_hash'] = key_hash
+        self.header['fmt'] = fmt
+        self.header['entry_map'] = entry_map
+        self.header['header_len'] = header_len
+        self.header['key_delim'] = key_delim
+        self.header['open_fd'] = open_fd
+        self.header['sync'] = sync
+        with io.open(self.path, 'w+b') as fp_:
+            header = '{0}{1}'.format(msgpack.dumps(self.header), self.h_delim)
+            fp_.write(header)
+        return self.header
 
     def open_db(self):
         '''
@@ -61,11 +78,10 @@ class DB(object):
         '''
         if not os.path.isfile(self.path):
             raise ValueError('No Database Exists')
-        fp_ = open(self.path, 'rb')
-        raw_head = fp_.read(self.header_len)
-        self.header = msgpack.loads(raw_head[:raw_head.index(self.h_delim)])
-        fp_.seek(0)
-        return fp_
+        with io.open(self.path, 'rb') as fp_:
+            raw_head = fp_.read(self.header_len)
+            self.header = msgpack.loads(raw_head[:raw_head.index(self.h_delim)])
+        return self.header
 
     def add_index(self, name):
         '''
@@ -73,7 +89,7 @@ class DB(object):
         '''
         if name in self.indexes:
             raise ValueError('Already has index')
-        ind = maras.index.hmap.HMapIndex(name, self.dbpath)
+        ind = maras.index.dhm.DHM(name, self.dbpath, **self.header)
         self.indexes[name] = ind
 
     def insert(self, data, key, id_=None, stor='msgpack'):
