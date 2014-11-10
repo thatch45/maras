@@ -51,7 +51,7 @@ class DHM(object):
         self.hash_limit = hash_limit
         self.key_hash = key_hash
         self.hash_func, self.key_size = maras.utils.get_hash_data(key_hash)
-        self.fmt = fmt.replace('K', self.key_size)
+        self.fmt = fmt.replace('K', str(self.key_size))
         self.header_len = header_len
         self.key_delim = key_delim
         self.open_fd = open_fd
