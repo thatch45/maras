@@ -72,7 +72,7 @@ class DHM(object):
         Return the hashmap directory
         '''
         key = key.strip(self.key_delim)
-        root = key[:key.rfind(self.key_delim)].replace(self.key_delim, os.pathsep)
+        root = key[:key.rfind(self.key_delim)].replace(self.key_delim, os.sep)
         return os.path.join(self.db_root, root)
 
     def _i_entry(self, key, id_, start, size, type_, prev, **kwargs):
@@ -171,11 +171,12 @@ class DHM(object):
         except Exception:
             comps = ('\0', 0)
         ret = {}
-        if comps[0] == '\0' * len(comps[0]):
-            return None, map_data
-        for ind in range(map_data['entry_map']):
-            ret[map_data['entry_map'][ind]] = comps[ind]
         ret['pos'] = pos
+        for ind in range(len(map_data['entry_map'])):
+            ret[map_data['entry_map'][ind]] = comps[ind]
+        if comps[0] == '\0' * len(comps[0]):
+            ret['key'] = key
+            return ret, map_data
         return ret, map_data
 
     def hash_map_ref(self, key):
@@ -190,8 +191,8 @@ class DHM(object):
             if not h_entry:
                 # This is a new key
                 break
-            if key == h_entry[0]:
-                # Key Collision, go to the next table
+            if key == h_entry['key']:
+                # is the right key
                 break
             f_num += 1
         return h_entry, fn_
@@ -229,8 +230,8 @@ class DHM(object):
         h_data['prev'] = i_pos
         map_data['fp'].write(i_entry)
         pack_args = []
-        for ind in range(map_data['entry_map']):
+        for ind in range(len(map_data['entry_map'])):
             pack_args.append(h_data[map_data['entry_map'][ind]])
-        h_entry = struct.pack(map_data[''], *pack_args)
+        h_entry = struct.pack(map_data['fmt'], *pack_args)
         map_data['fp'].seek(h_data['pos'])
         map_data['fp'].write(h_entry)
