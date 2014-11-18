@@ -104,6 +104,8 @@ class DB(object):
         Insert the given data into the db
         '''
         if stor is None:
+            stor = self.default_storage
+        else:
             stor = self.stores.get(stor, self.default_storage)
         if not id_:
             id_ = maras.utils.rand_hex_str(64)
