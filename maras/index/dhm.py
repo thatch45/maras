@@ -52,6 +52,7 @@ class DHM(object):
         self.key_hash = key_hash
         self.hash_func, self.key_size = maras.utils.get_hash_data(key_hash)
         self.fmt = fmt.replace('K', str(self.key_size))
+        self.bucket_size = self._calc_bucket_size()
         self.header_len = header_len
         self.key_delim = key_delim
         self.open_fd = open_fd
@@ -59,6 +60,12 @@ class DHM(object):
         self.maps = {}
         self.sync = sync
         self.kwargs = kwargs
+
+    def _calc_bucket_size(self):
+        '''
+        Calculate the size of the index buckets
+        '''
+        return len(struct.pack(self.fmt, '', 1))
 
     def _hm_dir(self, key):
         '''
