@@ -111,7 +111,7 @@ class DB(object):
             id_ = maras.utils.rand_hex_str(64)
         for name, index in self.indexes.items():
             ind_ref, map_key = index.hash_map_ref(key)
-            size, start = stor.insert(key, data, id_, ind_ref)
+            size, start = stor.insert(key, data, id_, index.maps[map_key])
             index.insert(key, id_, start, size, None, ind_ref, map_key)
             ind_ref['start'] = start
             ind_ref['size'] = size
