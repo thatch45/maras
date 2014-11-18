@@ -114,7 +114,10 @@ class DHM(object):
                 'num': int(fn_[fn_.rindex('_') + 1:]),
                 }
         header_entry = '{0}{1}'.format(msgpack.dumps(header), HEADER_DELIM)
-        fp_ = io.open(fn_, 'r+b')
+        try:
+            fp_ = io.open(fn_, 'r+b')
+        except IOError:
+            fp_ = io.open(fn_, 'w+b')
         fp_.write(header_entry)
         header['fp'] = fp_
         return header
