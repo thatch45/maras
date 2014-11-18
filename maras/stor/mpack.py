@@ -34,7 +34,10 @@ class MPack(object):
         stor_dir = os.path.dirname(fn_)
         if not os.path.exists(stor_dir):
             os.makedirs(stor_dir)
-        fp_ = io.open(fn_, 'r+b')
+        try:
+            fp_ = io.open(fn_, 'r+b')
+        except IOError:
+            fp_ = io.open(fn_, 'w+b')
         self.stores[fn_] = fp_
         return fp_
 
