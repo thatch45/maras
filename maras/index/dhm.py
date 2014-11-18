@@ -166,7 +166,10 @@ class DHM(object):
                 map_data['bucket_size'],
                 map_data['header_len'])
         raw_h_entry = map_data['fp'].read(map_data['bucket_size'])
-        comps = struct.unpack(map_data['fmt'], raw_h_entry)
+        try:
+            comps = struct.unpack(map_data['fmt'], raw_h_entry)
+        except Exception:
+            comps = ('\0', 0)
         ret = {}
         if comps[0] == '\0' * len(comps[0]):
             return None, map_data
