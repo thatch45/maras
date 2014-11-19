@@ -52,9 +52,24 @@ class MPack(object):
         stor.write(stor_str)
         return start, size
 
+    def get(self, ind_ref, map_):
+        '''
+        Get the referenced data out of the storage file
+        '''
+        stor = self.get_stor(ind_ref)
+        stor.seek(ind_ref['start'])
+        raw = stor.read(ind_ref['size'])
+        return self.data_out(raw)
+
     def data_in(self, data, id_):
         '''
         Serialize the data as it is sent in
         '''
         in_data = {'d': data, 'id_': id_}
         return msgpack.dumps(in_data)
+
+    def data_out(self, raw):
+        '''
+        Return the processed data
+        '''
+        return msgpack.loads(raw)

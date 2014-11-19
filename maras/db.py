@@ -116,3 +116,15 @@ class DB(object):
             ind_ref['start'] = start
             ind_ref['size'] = size
             return ind_ref
+
+    def get(self, key, id_):
+        '''
+        Retrive a database entry
+        '''
+        for name, index in self.indexes.items():
+            ind_ref, map_key = index.hash_map_ref(key)
+            if 'stor' in ind_ref:
+                stor = self.stores.get(ind_ref['stor'], self.default_storage)
+            else:
+                stor = self.default_storage
+            return stor.get(ind_ref, index.maps[map_key])
