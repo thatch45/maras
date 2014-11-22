@@ -117,7 +117,7 @@ class DB(object):
             ind_ref['size'] = size
             return ind_ref
 
-    def get(self, key, id_):
+    def get(self, key, id_=None):
         '''
         Retrive a database entry
         '''
