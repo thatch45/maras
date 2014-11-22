@@ -122,9 +122,9 @@ class DB(object):
         Retrive a database entry
         '''
         for name, index in self.indexes.items():
-            ind_ref, map_key = index.hash_map_ref(key)
-            if 'stor' in ind_ref:
-                stor = self.stores.get(ind_ref['stor'], self.default_storage)
+            ind, map_key = index.get_h_index(key, id_)
+            if 'stor' in ind:
+                stor = self.stores.get(ind['stor'], self.default_storage)
             else:
                 stor = self.default_storage
-            return stor.get(ind_ref, index.maps[map_key])
+            return stor.get(ind, index.maps[map_key])

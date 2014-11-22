@@ -216,11 +216,11 @@ class DHM(object):
             prev_i = self._get_h_prev(prev, map_key)
             if id_:
                 if prev_i['id'] == id_:
-                    return prev_i
+                    return prev_i, map_key
                 else:
                     prev = prev_i['p']
             else:
-                return prev_i
+                return prev_i, map_key
 
     def insert(
             self,
