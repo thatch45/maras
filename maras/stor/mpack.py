@@ -18,11 +18,11 @@ class MPack(object):
         self.db_root = db_root
         self.stores = {}
 
-    def get_stor(self, ind_ref):
+    def get_stor(self, map_):
         '''
         Get the stor data and fp based on the ind_ref
         '''
-        fn_ = os.path.join(ind_ref['dir'], 'stor_{0}'.format(ind_ref['num']))
+        fn_ = os.path.join(map_['dir'], 'stor_{0}'.format(map_['num']))
         if fn_ in self.stores:
             return self.stores[fn_]
         return self.add_stor(fn_)
@@ -56,7 +56,7 @@ class MPack(object):
         '''
         Get the referenced data out of the storage file
         '''
-        stor = self.get_stor(ind_ref)
+        stor = self.get_stor(map_)
         stor.seek(ind_ref['start'])
         raw = stor.read(ind_ref['size'])
         return self.data_out(raw)
