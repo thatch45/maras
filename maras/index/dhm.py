@@ -197,6 +197,31 @@ class DHM(object):
             f_num += 1
         return h_entry, fn_
 
+    def _get_h_prev(self, prev, map_key):
+        '''
+        Get the index data from the given prev location
+        '''
+        map_data = self.maps[map_key]
+        map_data['fp'].seek(prev)
+        i_len = struct.unpack('>H', map_data['fp'].read(2))
+        return msgpack.loads(map_data['fp'].read(i_len))
+
+    def get_h_index(self, key, id_=None):
+        '''
+        Return the index value for the given key and id
+        '''
+        h_entry, map_key = self.hash_map_ref(key)
+        prev = h_entry['prev']
+        while True:
+            prev_i = self._get_h_prev(prev, map_key)
+            if id_:
+                if prev_i['id'] == id_:
+                    return prev_i
+                else:
+                    prev = prev_i['p']
+            else:
+                return prev_i
+
     def insert(
             self,
             key,
